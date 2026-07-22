@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EUR/USD Live Dashboard</title>
+<title>TradeKing — ORB Live Dashboard</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;700;800&display=swap');
 
@@ -11,12 +11,15 @@
     --bg:       #040608;
     --surface:  #080c12;
     --surface2: #0e1520;
+    --surface3: #131b28;
     --border:   rgba(255,255,255,0.06);
     --border2:  rgba(255,255,255,0.12);
     --green:    #00e5a0;
     --red:      #ff4060;
     --yellow:   #ffd060;
     --blue:     #4da8ff;
+    --purple:   #b47aff;
+    --cyan:     #00d4ff;
     --white:    #e8f0fa;
     --muted:    #3a4f6a;
     --muted2:   #1e2d3e;
@@ -26,214 +29,265 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: var(--bg);
-    color: var(--white);
-    font-family: var(--font-mono);
-    min-height: 100vh;
-    padding-bottom: 3rem;
-    font-size: 13px;
+    background: var(--bg); color: var(--white); font-family: var(--font-mono);
+    min-height: 100vh; padding-bottom: 3rem; font-size: 13px;
   }
 
-  /* HEADER */
+  /* ── HEADER ── */
   .header {
-    padding: 1.25rem 1.25rem 1rem;
-    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.25rem 0.8rem; border-bottom: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: flex-end;
     position: relative; overflow: hidden;
   }
   .header::before {
-    content: 'EURUSD';
-    position: absolute; right: -5px; top: 50%; transform: translateY(-50%);
-    font-family: var(--font-display); font-weight: 800; font-size: 6rem;
-    color: rgba(255,255,255,0.018); letter-spacing: 6px; pointer-events: none;
+    content: 'TRADEKING'; position: absolute; right: -5px; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-display); font-weight: 800; font-size: 4.5rem;
+    color: rgba(255,255,255,0.015); letter-spacing: 6px; pointer-events: none;
   }
-  .pair { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; letter-spacing: 2px; line-height: 1; }
-  .pair span { color: var(--green); }
-  .header-sub { font-size: 0.6rem; letter-spacing: 2px; color: var(--muted); margin-top: 0.3rem; text-transform: uppercase; }
+  .brand { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; letter-spacing: 2px; line-height: 1; }
+  .brand span { color: var(--green); }
+  .header-sub { font-size: 0.55rem; letter-spacing: 2px; color: var(--muted); margin-top: 0.25rem; text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 0.75rem; }
   .live-badge {
-    font-size: 0.58rem; letter-spacing: 2px; color: var(--green);
-    border: 1px solid rgba(0,229,160,0.3); padding: 0.25rem 0.6rem;
+    font-size: 0.55rem; letter-spacing: 2px; color: var(--green);
+    border: 1px solid rgba(0,229,160,0.3); padding: 0.2rem 0.55rem;
     border-radius: 20px; background: rgba(0,229,160,0.06); text-transform: uppercase;
   }
+  .live-badge.offline { color: var(--red); border-color: rgba(255,64,96,0.3); background: rgba(255,64,96,0.06); }
   .live-dot {
     display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green); margin-right: 5px; animation: pulse 1.5s infinite;
+    background: var(--green); margin-right: 4px; animation: pulse 1.5s infinite;
   }
+  .live-badge.offline .live-dot { background: var(--red); animation: none; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .session-indicator {
+    font-size: 0.5rem; letter-spacing: 1.5px; color: var(--cyan);
+    padding: 0.2rem 0.5rem; border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 4px; background: rgba(0,212,255,0.06); text-transform: uppercase;
+  }
 
-  /* LAYOUT */
-  .main { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  /* ── LAYOUT ── */
+  .main { padding: 0.75rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
 
-  /* SETUP CARD */
+  /* ── SETUP CARD ── */
   .setup-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 1.25rem;
+    border-radius: 12px; padding: 1rem 1.25rem;
   }
-  .setup-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: 1px; }
-  .setup-row { display: flex; gap: 0.75rem; align-items: flex-end; margin-bottom: 0.75rem; }
-  .setup-field { flex: 1; display: flex; flex-direction: column; gap: 0.35rem; }
-  .setup-field label { font-size: 0.55rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
-  .setup-field input {
+  .setup-title { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: 1px; }
+  .setup-row { display: flex; gap: 0.6rem; align-items: flex-end; margin-bottom: 0.6rem; }
+  .setup-field { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+  .setup-field label { font-size: 0.5rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .setup-field input, .setup-field select {
     background: var(--surface2); border: 1px solid var(--border2); border-radius: 7px;
-    color: var(--white); font-family: var(--font-mono); font-size: 0.85rem;
-    padding: 0.55rem 0.75rem; outline: none; transition: border-color 0.2s; width: 100%;
+    color: var(--white); font-family: var(--font-mono); font-size: 0.8rem;
+    padding: 0.5rem 0.65rem; outline: none; transition: border-color 0.2s; width: 100%;
   }
-  .setup-field input:focus { border-color: rgba(0,229,160,0.4); }
+  .setup-field select { cursor: pointer; }
+  .setup-field input:focus, .setup-field select:focus { border-color: rgba(0,229,160,0.4); }
 
-  /* INTERVAL SELECTOR */
-  .interval-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
-  .int-btn {
-    flex: 1; padding: 0.45rem 0; background: var(--surface2); border: 1px solid var(--border2);
+  /* ── INTERVAL / ORB SELECTOR ── */
+  .btn-row { display: flex; gap: 0.4rem; margin-bottom: 0.6rem; }
+  .btn-opt {
+    flex: 1; padding: 0.4rem 0; background: var(--surface2); border: 1px solid var(--border2);
     border-radius: 7px; color: var(--muted); font-family: var(--font-mono);
-    font-size: 0.65rem; letter-spacing: 1px; cursor: pointer; text-transform: uppercase;
-    transition: all 0.2s;
+    font-size: 0.6rem; letter-spacing: 1px; cursor: pointer; text-transform: uppercase;
+    transition: all 0.2s; text-align: center;
   }
-  .int-btn.active { border-color: var(--green); color: var(--green); background: rgba(0,229,160,0.08); }
+  .btn-opt.active { border-color: var(--green); color: var(--green); background: rgba(0,229,160,0.08); }
 
   .run-btn {
-    width: 100%; padding: 0.9rem 1rem;
+    width: 100%; padding: 0.75rem 1rem;
     background: linear-gradient(135deg, #001e12, #000a08);
     border: 1px solid var(--green); border-radius: 10px; color: var(--green);
-    font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+    font-family: var(--font-display); font-size: 0.9rem; font-weight: 700;
     letter-spacing: 3px; cursor: pointer; text-transform: uppercase; transition: all 0.2s;
   }
   .run-btn:hover { background: rgba(0,229,160,0.08); }
   .run-btn:active { transform: scale(0.98); }
   .run-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--muted); color: var(--muted); }
+  .run-btn.stop { border-color: var(--red); color: var(--red); background: linear-gradient(135deg, #1e0008, #0a0002); }
+  .run-btn.stop:hover { background: rgba(255,64,96,0.08); }
 
-  /* SPINNER */
-  .spinner { display: none; flex-direction: column; align-items: center; gap: 0.75rem; padding: 2rem 0; }
+  /* ── ERROR / SPINNER ── */
+  .error-box {
+    display: none; background: rgba(255,64,96,0.08); border: 1px solid rgba(255,64,96,0.3);
+    border-radius: 10px; padding: 0.75rem 1rem; color: var(--red);
+    font-size: 0.65rem; line-height: 1.7; letter-spacing: 0.5px;
+  }
+  .error-box.active { display: block; }
+  .spinner { display: none; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1.5rem 0; }
   .spinner.active { display: flex; }
   .spin-ring {
-    width: 36px; height: 36px; border: 2px solid var(--muted2);
+    width: 30px; height: 30px; border: 2px solid var(--muted2);
     border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .spin-label { font-size: 0.6rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
-  .spin-step { font-size: 0.65rem; color: var(--green); letter-spacing: 1px; }
+  .spin-label { font-size: 0.55rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
 
-  /* ERROR BOX */
-  .error-box {
-    display: none; background: rgba(255,64,96,0.08); border: 1px solid rgba(255,64,96,0.3);
-    border-radius: 10px; padding: 1rem 1.25rem; color: var(--red);
-    font-size: 0.7rem; line-height: 1.8; letter-spacing: 0.5px;
+  /* ── LIVE CHAT FEED ── */
+  .chat-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
   }
-  .error-box.active { display: block; }
+  .chat-header {
+    padding: 0.6rem 1rem; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chat-title { font-size: 0.5rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .chat-count { font-size: 0.5rem; letter-spacing: 1px; color: var(--muted2); }
+  .chat-body {
+    height: 220px; overflow-y: auto; padding: 0.5rem 0.75rem;
+    scroll-behavior: smooth;
+  }
+  .chat-body::-webkit-scrollbar { width: 3px; }
+  .chat-body::-webkit-scrollbar-track { background: transparent; }
+  .chat-body::-webkit-scrollbar-thumb { background: var(--muted2); border-radius: 2px; }
+  .chat-msg {
+    padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.02);
+    font-size: 0.6rem; line-height: 1.6; letter-spacing: 0.3px;
+    animation: fadeSlide 0.3s ease;
+  }
+  @keyframes fadeSlide { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .chat-msg .ts { color: var(--muted2); margin-right: 0.5rem; font-size: 0.5rem; }
+  .chat-msg .tag { font-weight: 700; letter-spacing: 1px; margin-right: 0.4rem; font-size: 0.5rem; padding: 0.1rem 0.35rem; border-radius: 3px; }
+  .chat-msg .tag.system  { color: var(--muted); background: rgba(58,79,106,0.15); }
+  .chat-msg .tag.range   { color: var(--cyan); background: rgba(0,212,255,0.1); }
+  .chat-msg .tag.signal  { color: var(--yellow); background: rgba(255,208,96,0.1); }
+  .chat-msg .tag.buy     { color: var(--green); background: rgba(0,229,160,0.1); }
+  .chat-msg .tag.sell    { color: var(--red); background: rgba(255,64,96,0.1); }
+  .chat-msg .tag.warn    { color: var(--yellow); background: rgba(255,208,96,0.1); }
+  .chat-msg .tag.info    { color: var(--blue); background: rgba(77,168,255,0.1); }
+  .chat-msg .tag.exit    { color: var(--purple); background: rgba(180,122,255,0.1); }
+  .chat-msg .txt { color: var(--white); opacity: 0.85; }
+  .chat-msg .hl-green { color: var(--green); font-weight: 700; }
+  .chat-msg .hl-red { color: var(--red); font-weight: 700; }
+  .chat-msg .hl-yellow { color: var(--yellow); font-weight: 700; }
+  .chat-msg .hl-cyan { color: var(--cyan); font-weight: 700; }
+  .chat-msg .hl-blue { color: var(--blue); font-weight: 700; }
 
-  /* TICKER ROW */
-  .ticker-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.6rem; }
-  .ticker-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; }
-  .tc-label { font-size: 0.55rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 0.35rem; }
-  .tc-val { font-size: 1rem; font-weight: 700; color: var(--white); }
+  /* ── ORB RANGE CARD ── */
+  .orb-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem 1.25rem;
+  }
+  .orb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  .orb-title { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; }
+  .orb-status {
+    font-size: 0.5rem; letter-spacing: 2px; font-weight: 700; text-transform: uppercase;
+    padding: 0.2rem 0.6rem; border-radius: 4px;
+  }
+  .orb-status.forming  { color: var(--cyan); background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25); }
+  .orb-status.ready    { color: var(--green); background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.25); }
+  .orb-status.bullish  { color: var(--green); background: rgba(0,229,160,0.12); border: 1px solid rgba(0,229,160,0.35); }
+  .orb-status.bearish  { color: var(--red); background: rgba(255,64,96,0.12); border: 1px solid rgba(255,64,96,0.35); }
+  .orb-status.inactive { color: var(--muted); background: rgba(58,79,106,0.1); border: 1px solid var(--border); }
+
+  .orb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.6rem; }
+  .orb-item { text-align: center; }
+  .orb-item-label { font-size: 0.48rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 0.25rem; }
+  .orb-item-val { font-size: 0.9rem; font-weight: 700; }
+  .orb-item-val.green { color: var(--green); }
+  .orb-item-val.red { color: var(--red); }
+  .orb-item-val.cyan { color: var(--cyan); }
+  .orb-item-val.yellow { color: var(--yellow); }
+
+  /* ── CHART ── */
+  .chart-wrap {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0.6rem 0.6rem 0.4rem; overflow: hidden;
+  }
+  .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
+  .chart-label { font-size: 0.5rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .chart-live { font-size: 0.45rem; letter-spacing: 1.5px; color: var(--green); text-transform: uppercase; }
+  #main-chart { width: 100%; height: 200px; }
+
+  /* ── TICKER ROW ── */
+  .ticker-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 0.5rem; }
+  .ticker-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.75rem; }
+  .tc-label { font-size: 0.48rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .tc-val { font-size: 0.85rem; font-weight: 700; color: var(--white); }
   .tc-val.up { color: var(--green); }
   .tc-val.down { color: var(--red); }
   .tc-val.neutral { color: var(--yellow); }
 
-  /* SIGNAL CARD */
+  /* ── SIGNAL CARD ── */
   .signal-card {
-    border-radius: 12px; border: 1px solid var(--border); padding: 1.25rem;
+    border-radius: 12px; border: 1px solid var(--border); padding: 1rem 1.25rem;
     display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center;
     background: var(--surface);
   }
-  .signal-card.buy  { border-color: rgba(0,229,160,0.3);  background: rgba(0,229,160,0.04); }
-  .signal-card.sell { border-color: rgba(255,64,96,0.3);   background: rgba(255,64,96,0.04); }
-  .signal-card.wait { border-color: rgba(255,208,96,0.3);  background: rgba(255,208,96,0.04); }
-  .sig-glyph { font-family: var(--font-display); font-weight: 800; font-size: 3.2rem; letter-spacing: 3px; line-height: 1; }
+  .signal-card.buy  { border-color: rgba(0,229,160,0.35); background: rgba(0,229,160,0.04); }
+  .signal-card.sell { border-color: rgba(255,64,96,0.35); background: rgba(255,64,96,0.04); }
+  .signal-card.wait { border-color: rgba(255,208,96,0.35); background: rgba(255,208,96,0.04); }
+  .signal-card.hold { border-color: var(--border); background: var(--surface); }
+  .sig-glyph { font-family: var(--font-display); font-weight: 800; font-size: 2.8rem; letter-spacing: 3px; line-height: 1; }
   .signal-card.buy  .sig-glyph { color: var(--green); }
   .signal-card.sell .sig-glyph { color: var(--red); }
   .signal-card.wait .sig-glyph { color: var(--yellow); }
   .signal-card.hold .sig-glyph { color: var(--muted); }
-  .sig-meta { display: flex; flex-direction: column; gap: 0.4rem; }
-  .sig-conf-row { display: flex; align-items: center; gap: 0.75rem; }
-  .conf-pct { font-size: 0.8rem; font-weight: 700; }
+  .sig-meta { display: flex; flex-direction: column; gap: 0.35rem; }
+  .sig-conf-row { display: flex; align-items: center; gap: 0.6rem; }
+  .conf-pct { font-size: 0.75rem; font-weight: 700; }
   .conf-bar-track { flex: 1; height: 4px; background: var(--muted2); border-radius: 2px; overflow: hidden; }
   .conf-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
   .signal-card.buy  .conf-bar-fill { background: var(--green); }
   .signal-card.sell .conf-bar-fill { background: var(--red); }
   .signal-card.wait .conf-bar-fill { background: var(--yellow); }
   .signal-card.hold .conf-bar-fill { background: var(--muted); }
-  .sig-reason { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.5px; }
-  .sig-price-change { font-size: 0.65rem; margin-top: 0.2rem; }
+  .sig-reason { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.3px; line-height: 1.5; }
+  .sig-filters { font-size: 0.52rem; color: var(--muted2); margin-top: 0.15rem; }
 
-  /* RSI GAUGE */
-  .rsi-gauge-wrap {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;
-  }
-  .rsi-header { display: flex; justify-content: space-between; align-items: baseline; }
-  .rsi-label { font-size: 0.55rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
-  .rsi-value { font-size: 1rem; font-weight: 700; }
-  .rsi-track {
-    position: relative; height: 8px; border-radius: 4px; overflow: hidden;
-    background: linear-gradient(to right, rgba(0,229,160,0.4) 0%, rgba(0,229,160,0.15) 28%, var(--muted2) 28%, var(--muted2) 72%, rgba(255,64,96,0.15) 72%, rgba(255,64,96,0.4) 100%);
-  }
-  .rsi-needle {
-    position: absolute; top: 0; bottom: 0; width: 3px; border-radius: 2px;
-    background: var(--white); transition: left 0.5s ease; transform: translateX(-50%);
-  }
-  .rsi-zones { display: flex; justify-content: space-between; font-size: 0.5rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-  .rsi-state { font-size: 0.6rem; letter-spacing: 2px; font-weight: 700; text-transform: uppercase; }
-  .rsi-state.os { color: var(--green); }
-  .rsi-state.ob { color: var(--red); }
-  .rsi-state.neutral { color: var(--muted); }
-
-  /* TWO-COL */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; }
+  /* ── TWO COL ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 1rem; }
   .section-title {
-    font-size: 0.55rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
-    margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.5rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+    margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.5rem;
   }
   .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .ind-row { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid var(--border); }
+  .ind-row { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
   .ind-row:last-child { border-bottom: none; }
-  .ind-key { font-size: 0.62rem; color: var(--muted); letter-spacing: 1px; }
-  .ind-val { font-size: 0.72rem; font-weight: 700; }
+  .ind-key { font-size: 0.58rem; color: var(--muted); letter-spacing: 1px; }
+  .ind-val { font-size: 0.68rem; font-weight: 700; }
   .ind-val.up { color: var(--green); }
   .ind-val.down { color: var(--red); }
   .ind-val.neutral { color: var(--yellow); }
 
-  /* TRADE PLAN */
-  .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
-  .plan-label { font-size: 0.52rem; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; margin-bottom: 0.2rem; }
-  .plan-val { font-size: 0.85rem; font-weight: 700; }
+  /* ── TRADE PLAN ── */
+  .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 0.8rem; }
+  .plan-label { font-size: 0.48rem; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; margin-bottom: 0.15rem; }
+  .plan-val { font-size: 0.8rem; font-weight: 700; }
   .plan-val.entry { color: var(--blue); }
   .plan-val.sl { color: var(--red); }
   .plan-val.tp { color: var(--green); }
   .plan-val.rr { color: var(--yellow); }
-  .pnl-row { display: flex; gap: 0.75rem; margin-top: 0.85rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
-  .pnl-item { flex: 1; padding: 0.6rem 0.8rem; border-radius: 8px; text-align: center; }
+  .pnl-row { display: flex; gap: 0.6rem; margin-top: 0.65rem; padding-top: 0.6rem; border-top: 1px solid var(--border); }
+  .pnl-item { flex: 1; padding: 0.5rem 0.6rem; border-radius: 8px; text-align: center; }
   .pnl-item.loss { background: rgba(255,64,96,0.08); border: 1px solid rgba(255,64,96,0.2); }
   .pnl-item.gain { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); }
-  .pnl-lbl { font-size: 0.5rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.25rem; }
+  .pnl-lbl { font-size: 0.45rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.2rem; }
   .pnl-item.loss .pnl-lbl { color: var(--red); }
   .pnl-item.gain .pnl-lbl { color: var(--green); }
-  .pnl-amount { font-size: 1rem; font-weight: 700; }
+  .pnl-amount { font-size: 0.9rem; font-weight: 700; }
   .pnl-item.loss .pnl-amount { color: var(--red); }
   .pnl-item.gain .pnl-amount { color: var(--green); }
-  .no-plan { text-align: center; padding: 1.25rem 0; color: var(--muted); font-size: 0.65rem; letter-spacing: 1px; }
+  .no-plan { text-align: center; padding: 1rem 0; color: var(--muted); font-size: 0.6rem; letter-spacing: 1px; }
 
-  /* CHART */
-  .chart-wrap {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 0.75rem 0.75rem 0.5rem; overflow: hidden;
-  }
-  .chart-label { font-size: 0.52rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 0.4rem; }
-  #mini-chart { width: 100%; height: 120px; }
+  /* ── LAST UPDATED ── */
+  .last-updated { text-align: center; font-size: 0.5rem; color: var(--muted); letter-spacing: 1px; padding: 0.15rem 0; }
 
-  /* LAST UPDATED */
-  .last-updated { text-align: center; font-size: 0.55rem; color: var(--muted); letter-spacing: 1px; padding: 0.25rem 0; }
-
-  /* DISCLAIMER */
+  /* ── DISCLAIMER ── */
   .disclaimer {
-    margin: 0 1.25rem; padding: 0.75rem 1rem;
+    margin: 0.5rem 1.25rem; padding: 0.6rem 0.85rem;
     background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
-    font-size: 0.55rem; color: var(--muted); line-height: 1.7; text-align: center; letter-spacing: 0.5px;
+    font-size: 0.5rem; color: var(--muted); line-height: 1.7; text-align: center; letter-spacing: 0.5px;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 520px) {
     .ticker-row { grid-template-columns: 1fr 1fr; }
     .two-col { grid-template-columns: 1fr; }
+    .orb-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -241,21 +295,24 @@
 
 <header class="header">
   <div>
-    <div class="pair">EUR<span>/USD</span></div>
-    <div class="header-sub">Live Market Dashboard</div>
+    <div class="brand">Trade<span>King</span></div>
+    <div class="header-sub">ORB — Opening Range Breakout · EUR/USD</div>
   </div>
-  <div class="live-badge" id="liveBadge"><span class="live-dot"></span>Live Data</div>
+  <div class="header-right">
+    <div class="session-indicator" id="sessionIndicator">—</div>
+    <div class="live-badge offline" id="liveBadge"><span class="live-dot"></span>Offline</div>
+  </div>
 </header>
 
 <div class="main">
 
-  <!-- Setup -->
-  <div class="setup-card">
-    <div class="setup-title">Setup</div>
+  <!-- ═══ SETUP ═══ -->
+  <div class="setup-card" id="setupCard">
+    <div class="setup-title">⚙ Setup</div>
     <div class="setup-row">
       <div class="setup-field">
-        <label>API Key</label>
-        <input type="text" id="apiKey" value="0ca4dc963a194944ba47e149638a79a9" placeholder="Twelve Data API key">
+        <label>API Key (Twelve Data)</label>
+        <input type="text" id="apiKey" value="0ca4dc963a194944ba47e149638a79a9" placeholder="Your Twelve Data API key">
       </div>
     </div>
     <div class="setup-row">
@@ -268,45 +325,109 @@
         <input type="number" id="riskInput" value="2" min="0.1" max="10" step="0.1">
       </div>
     </div>
-    <div class="interval-row">
-      <button class="int-btn active" onclick="setInterval_('1min',this)">1m</button>
-      <button class="int-btn" onclick="setInterval_('5min',this)">5m</button>
-      <button class="int-btn" onclick="setInterval_('15min',this)">15m</button>
-      <button class="int-btn" onclick="setInterval_('1h',this)">1h</button>
-      <button class="int-btn" onclick="setInterval_('4h',this)">4h</button>
+    <div class="setup-row">
+      <div class="setup-field">
+        <label>ORB Window</label>
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn-opt" onclick="setORBWindow(5,this)">5m</button>
+          <button class="btn-opt active" onclick="setORBWindow(15,this)">15m</button>
+          <button class="btn-opt" onclick="setORBWindow(30,this)">30m</button>
+        </div>
+      </div>
+      <div class="setup-field">
+        <label>Session</label>
+        <select id="sessionSelect">
+          <option value="london">London (07:00 GMT)</option>
+          <option value="newyork" selected>New York (12:00 GMT)</option>
+          <option value="both">Both Sessions</option>
+        </select>
+      </div>
     </div>
-    <button class="run-btn" id="runBtn" onclick="runAnalysis()">⚡ Fetch Live Data</button>
+    <div class="setup-row">
+      <div class="setup-field">
+        <label>Chart Interval</label>
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn-opt active" onclick="setChartInterval('1min',this)">1m</button>
+          <button class="btn-opt" onclick="setChartInterval('5min',this)">5m</button>
+        </div>
+      </div>
+      <div class="setup-field">
+        <label>Stop Placement</label>
+        <select id="stopMode">
+          <option value="opposite">Opposite Range Side</option>
+          <option value="midpoint">Range Midpoint (Tighter)</option>
+          <option value="atr">ATR-Based (1.5× ATR)</option>
+        </select>
+      </div>
+    </div>
+    <button class="run-btn" id="runBtn" onclick="startLive()">⚡ Start ORB Live</button>
   </div>
 
-  <!-- Error -->
+  <!-- ═══ ERROR / SPINNER ═══ -->
   <div class="error-box" id="errorBox"></div>
-
-  <!-- Spinner -->
   <div class="spinner" id="spinner">
     <div class="spin-ring"></div>
-    <div class="spin-label" id="spinLabel">Fetching real EUR/USD data…</div>
+    <div class="spin-label" id="spinLabel">Connecting to live EUR/USD data…</div>
   </div>
 
-  <!-- Dashboard -->
-  <div id="dashboard" style="display:none; flex-direction:column; gap:1rem;">
+  <!-- ═══ DASHBOARD ═══ -->
+  <div id="dashboard" style="display:none; flex-direction:column; gap:0.75rem;">
 
     <div class="last-updated" id="lastUpdated"></div>
 
-    <!-- Chart -->
-    <div class="chart-wrap">
-      <div class="chart-label" id="chartLabel">Price Chart</div>
-      <svg id="mini-chart" viewBox="0 0 400 120" preserveAspectRatio="none"></svg>
+    <!-- CHAT FEED -->
+    <div class="chat-wrap">
+      <div class="chat-header">
+        <span class="chat-title">📡 Live Market Feed</span>
+        <span class="chat-count" id="chatCount">0 messages</span>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
     </div>
 
-    <!-- Ticker -->
+    <!-- ORB RANGE -->
+    <div class="orb-card" id="orbCard">
+      <div class="orb-header">
+        <div class="orb-title">Opening Range</div>
+        <div class="orb-status inactive" id="orbStatus">INACTIVE</div>
+      </div>
+      <div class="orb-grid">
+        <div class="orb-item">
+          <div class="orb-item-label">Range High (ORH)</div>
+          <div class="orb-item-val green" id="orbHigh">—</div>
+        </div>
+        <div class="orb-item">
+          <div class="orb-item-label">Range Low (ORL)</div>
+          <div class="orb-item-val red" id="orbLow">—</div>
+        </div>
+        <div class="orb-item">
+          <div class="orb-item-label">Range Size</div>
+          <div class="orb-item-val cyan" id="orbSize">—</div>
+        </div>
+        <div class="orb-item">
+          <div class="orb-item-label">Midpoint</div>
+          <div class="orb-item-val yellow" id="orbMid">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-wrap">
+      <div class="chart-header">
+        <span class="chart-label" id="chartLabel">EUR/USD · Candlestick + ORB</span>
+        <span class="chart-live" id="chartLive">● LIVE</span>
+      </div>
+      <svg id="main-chart" viewBox="0 0 500 200" preserveAspectRatio="none"></svg>
+    </div>
+
+    <!-- TICKER -->
     <div class="ticker-row">
       <div class="ticker-card">
         <div class="tc-label">Price</div>
         <div class="tc-val" id="tcPrice">—</div>
       </div>
       <div class="ticker-card">
-        <div class="tc-label">SMA 20</div>
-        <div class="tc-val" id="tcSMA">—</div>
+        <div class="tc-label">EMA 21</div>
+        <div class="tc-val" id="tcEMA">—</div>
       </div>
       <div class="ticker-card">
         <div class="tc-label">ATR 14</div>
@@ -316,42 +437,35 @@
         <div class="tc-label">RSI 14</div>
         <div class="tc-val" id="tcRSI">—</div>
       </div>
+      <div class="ticker-card">
+        <div class="tc-label">Vol</div>
+        <div class="tc-val" id="tcVol">—</div>
+      </div>
     </div>
 
-    <!-- Signal -->
-    <div class="signal-card" id="signalCard">
+    <!-- SIGNAL -->
+    <div class="signal-card hold" id="signalCard">
       <div class="sig-glyph" id="sigGlyph">—</div>
       <div class="sig-meta">
         <div class="sig-conf-row">
           <span class="conf-pct" id="sigConf">0%</span>
           <div class="conf-bar-track"><div class="conf-bar-fill" id="sigConfBar" style="width:0%"></div></div>
         </div>
-        <div class="sig-reason" id="sigReason">Tap fetch to load live data</div>
-        <div class="sig-price-change" id="sigPriceChange"></div>
+        <div class="sig-reason" id="sigReason">Waiting for live data…</div>
+        <div class="sig-filters" id="sigFilters"></div>
       </div>
     </div>
 
-    <!-- RSI Gauge -->
-    <div class="rsi-gauge-wrap">
-      <div class="rsi-header">
-        <span class="rsi-label">RSI (14)</span>
-        <span class="rsi-state" id="rsiState">—</span>
-      </div>
-      <div class="rsi-track"><div class="rsi-needle" id="rsiNeedle" style="left:50%"></div></div>
-      <div class="rsi-zones">
-        <span>Oversold &lt;30</span><span>Neutral</span><span>Overbought &gt;70</span>
-      </div>
-    </div>
-
-    <!-- Indicators + Risk -->
+    <!-- INDICATORS + RISK -->
     <div class="two-col">
       <div class="section-card">
-        <div class="section-title">Indicators</div>
-        <div class="ind-row"><span class="ind-key">Trend</span><span class="ind-val" id="indTrend">—</span></div>
-        <div class="ind-row"><span class="ind-key">EMA 20</span><span class="ind-val" id="indEMA">—</span></div>
-        <div class="ind-row"><span class="ind-key">ATR 14</span><span class="ind-val" id="indATR">—</span></div>
+        <div class="section-title">ORB Confirmations</div>
+        <div class="ind-row"><span class="ind-key">Trend (EMA)</span><span class="ind-val" id="indTrend">—</span></div>
+        <div class="ind-row"><span class="ind-key">Volume</span><span class="ind-val" id="indVol">—</span></div>
+        <div class="ind-row"><span class="ind-key">Candle Close</span><span class="ind-val" id="indCandle">—</span></div>
         <div class="ind-row"><span class="ind-key">RSI</span><span class="ind-val" id="indRSI">—</span></div>
-        <div class="ind-row"><span class="ind-key">Candles</span><span class="ind-val" id="indCandles">—</span></div>
+        <div class="ind-row"><span class="ind-key">Range Quality</span><span class="ind-val" id="indRange">—</span></div>
+        <div class="ind-row"><span class="ind-key">Session</span><span class="ind-val" id="indSession">—</span></div>
       </div>
       <div class="section-card">
         <div class="section-title">Risk</div>
@@ -360,43 +474,89 @@
         <div class="ind-row"><span class="ind-key">Risk $</span><span class="ind-val down" id="riskAmt">—</span></div>
         <div class="ind-row"><span class="ind-key">Lot Size</span><span class="ind-val" id="riskLots">—</span></div>
         <div class="ind-row"><span class="ind-key">R:R</span><span class="ind-val up" id="riskRR">—</span></div>
+        <div class="ind-row"><span class="ind-key">Trade Today</span><span class="ind-val" id="riskTrades">—</span></div>
       </div>
     </div>
 
-    <!-- Trade Plan -->
+    <!-- TRADE PLAN -->
     <div class="section-card">
       <div class="section-title">Trade Plan</div>
-      <div id="tradePlanBody"></div>
+      <div id="tradePlanBody"><div class="no-plan">No active ORB signal — waiting for breakout</div></div>
     </div>
 
-    <button class="run-btn" onclick="runAnalysis()">🔄 Refresh Live Data</button>
+    <button class="run-btn stop" id="stopBtn" onclick="stopLive()">⏹ Stop Live Feed</button>
 
   </div>
 </div>
 
 <div class="disclaimer">
-  ⚠ Educational purposes only. Data from Twelve Data (may be delayed on free tier).<br>
-  Always apply your own analysis. Never risk more than you can afford to lose.
+  ⚠ Educational purposes only. Real-time data from Twelve Data (may be delayed on free tier).<br>
+  ORB is a directional strategy — false breakouts occur. Always apply your own analysis.<br>
+  Never risk more than you can afford to lose.
 </div>
 
 <script>
-let selectedInterval = '1min';
+/* ══════════════════════════════════════════════════════════
+   TradeKing — ORB (Opening Range Breakout) Live Dashboard
+   ══════════════════════════════════════════════════════════ */
 
-function setInterval_(val, btn) {
-  selectedInterval = val;
-  document.querySelectorAll('.int-btn').forEach(b => b.classList.remove('active'));
+// ── CONFIG ──
+let orbWindowMin   = 15;
+let chartInterval  = '1min';
+let isLive         = false;
+let ws             = null;
+let pollTimer      = null;
+let candles        = [];
+let chatMsgCount   = 0;
+
+// ── ORB STATE ──
+const orbState = {
+  status: 'inactive',     // inactive | forming | ready | bullish | bearish
+  rangeHigh: null,
+  rangeLow: null,
+  rangeStart: null,       // Date
+  rangeEnd: null,         // Date
+  sessionKey: '',         // e.g. 'london' or 'newyork'
+  breakoutBar: null,
+  tradedLong: false,
+  tradedShort: false,
+  activeTrade: null,      // { direction, entry, sl, tp }
+  dailyTrades: 0,
+};
+
+// ── SESSION TIMES (UTC hours) ──
+const SESSIONS = {
+  london:  { start: 7,  label: 'London' },
+  newyork: { start: 12, label: 'New York' },
+};
+
+// ── UI HELPERS ──
+function setORBWindow(mins, btn) {
+  orbWindowMin = mins;
+  document.querySelectorAll('.setup-row .btn-opt').forEach(b => {
+    if (b.parentElement === btn.parentElement) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+}
+function setChartInterval(val, btn) {
+  chartInterval = val;
+  document.querySelectorAll('.setup-row .btn-opt').forEach(b => {
+    if (b.parentElement === btn.parentElement) b.classList.remove('active');
+  });
   btn.classList.add('active');
 }
 
-/* ── INDICATORS ── */
-function calcSMA(closes, period) {
-  if (closes.length < period) return NaN;
-  return closes.slice(-period).reduce((a,b) => a+b, 0) / period;
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.innerHTML = '⚠ ' + msg;
+  el.classList.add('active');
 }
+
+// ── INDICATORS ──
 function calcEMA(closes, period) {
   if (closes.length < period) return NaN;
   const k = 2 / (period + 1);
-  let val = closes.slice(0, period).reduce((a,b) => a+b, 0) / period;
+  let val = closes.slice(0, period).reduce((a, b) => a + b, 0) / period;
   for (let i = period; i < closes.length; i++) val = closes[i] * k + val * (1 - k);
   return val;
 }
@@ -406,248 +566,768 @@ function calcATR(candles, period) {
   for (let i = 1; i < candles.length; i++) {
     trs.push(Math.max(
       candles[i].high - candles[i].low,
-      Math.abs(candles[i].high - candles[i-1].close),
-      Math.abs(candles[i].low  - candles[i-1].close)
+      Math.abs(candles[i].high - candles[i - 1].close),
+      Math.abs(candles[i].low  - candles[i - 1].close)
     ));
   }
-  return trs.slice(-period).reduce((a,b) => a+b, 0) / period;
+  return trs.slice(-period).reduce((a, b) => a + b, 0) / period;
 }
 function calcRSI(closes, period) {
   if (closes.length < period + 1) return NaN;
   const last = closes.slice(-(period + 1));
   let gains = 0, losses = 0;
   for (let i = 1; i < last.length; i++) {
-    const d = last[i] - last[i-1];
+    const d = last[i] - last[i - 1];
     if (d > 0) gains += d; else losses += -d;
   }
   const avgG = gains / period, avgL = losses / period;
   if (avgL === 0) return 100;
   return 100 - 100 / (1 + avgG / avgL);
 }
-
-/* ── SIGNAL ── */
-function getSignal(price, smaVal, rsiVal) {
-  if (isNaN(smaVal)) return { signal: 'HOLD', reason: 'Not enough candle data' };
-  const bull = price > smaVal, bear = price < smaVal;
-  if (bull && rsiVal < 70) return { signal: 'BUY',  reason: 'Price above SMA · RSI not overbought' };
-  if (bear && rsiVal > 30) return { signal: 'SELL', reason: 'Price below SMA · RSI not oversold' };
-  if (bull && rsiVal >= 70) return { signal: 'WAIT', reason: 'Bullish but RSI overbought — wait for pullback' };
-  if (bear && rsiVal <= 30) return { signal: 'WAIT', reason: 'Bearish but RSI oversold — bounce possible' };
-  return { signal: 'HOLD', reason: 'No clear bias' };
-}
-function getConf(price, smaVal, rsiVal) {
-  if (isNaN(smaVal) || isNaN(rsiVal)) return 0;
-  const dist = Math.abs(price - smaVal) / smaVal * 100;
-  const rsiDist = price > smaVal ? (70 - rsiVal) / 70 : (rsiVal - 30) / 70;
-  return Math.min(95, Math.round(40 + dist * 200 + rsiDist * 30));
+function avgVolume(candles, period) {
+  if (candles.length < period) return 0;
+  const vols = candles.slice(-period).map(c => c.volume || 0);
+  return vols.reduce((a, b) => a + b, 0) / period;
 }
 
-/* ── RISK ── */
-function getRisk(entry, atrVal, balance, riskPct) {
-  const a = (isNaN(atrVal) || atrVal <= 0) ? 0.001 : atrVal;
-  return {
-    sl_buy:  +(entry - 1.5 * a).toFixed(5),
-    tp_buy:  +(entry + 3.0 * a).toFixed(5),
-    sl_sell: +(entry + 1.5 * a).toFixed(5),
-    tp_sell: +(entry - 3.0 * a).toFixed(5),
-    riskAmt: balance * riskPct / 100
-  };
-}
-function getLots(entry, sl, riskAmt) {
-  const pips = Math.abs(entry - sl) * 10000;
-  if (pips <= 0) return 0.01;
-  return Math.max(0.01, Math.floor(riskAmt / (pips * 10) * 100) / 100);
+// ── CHAT FEED ──
+function chatMsg(tag, text) {
+  const body = document.getElementById('chatBody');
+  const now = new Date();
+  const ts = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const div = document.createElement('div');
+  div.className = 'chat-msg';
+  div.innerHTML = `<span class="ts">${ts}</span><span class="tag ${tag}">${tag.toUpperCase()}</span><span class="txt">${text}</span>`;
+  body.appendChild(div);
+  // Keep max 100 messages
+  while (body.children.length > 100) body.removeChild(body.firstChild);
+  body.scrollTop = body.scrollHeight;
+  chatMsgCount++;
+  document.getElementById('chatCount').textContent = chatMsgCount + ' messages';
 }
 
-/* ── CHART ── */
-function drawChart(candles, smaVal) {
-  const svg = document.getElementById('mini-chart');
+// ── SESSION LOGIC ──
+function getCurrentSession() {
+  const sel = document.getElementById('sessionSelect').value;
+  const now = new Date();
+  const utcH = now.getUTCHours();
+  const utcM = now.getUTCMinutes();
+  const utcMinOfDay = utcH * 60 + utcM;
+
+  if (sel === 'both') {
+    // Check if we're in London or NY window
+    const lonStart = SESSIONS.london.start * 60;
+    const nyStart  = SESSIONS.newyork.start * 60;
+    if (utcMinOfDay >= lonStart && utcMinOfDay < lonStart + 120) return 'london';
+    if (utcMinOfDay >= nyStart && utcMinOfDay < nyStart + 120) return 'newyork';
+    // If past NY open, use NY
+    if (utcMinOfDay >= nyStart) return 'newyork';
+    return 'london';
+  }
+  return sel;
+}
+
+function getSessionOpenUTC(sessionKey) {
+  return SESSIONS[sessionKey].start;
+}
+
+function isInRangeWindow(sessionKey) {
+  const now = new Date();
+  const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const sStart = SESSIONS[sessionKey].start * 60;
+  return utcMin >= sStart && utcMin < sStart + orbWindowMin;
+}
+
+function isAfterRangeWindow(sessionKey) {
+  const now = new Date();
+  const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const sStart = SESSIONS[sessionKey].start * 60;
+  return utcMin >= sStart + orbWindowMin;
+}
+
+function isWithinTradingHours(sessionKey) {
+  const now = new Date();
+  const utcH = now.getUTCHours();
+  const sStart = SESSIONS[sessionKey].start;
+  // Don't take new trades after session start + 4 hours (e.g. 16:00 GMT for NY)
+  return utcH >= sStart && utcH < sStart + 4;
+}
+
+// ── ORB LOGIC ──
+function resetORBForSession(sessionKey) {
+  orbState.status = 'inactive';
+  orbState.rangeHigh = null;
+  orbState.rangeLow = null;
+  orbState.rangeStart = null;
+  orbState.rangeEnd = null;
+  orbState.sessionKey = sessionKey;
+  orbState.breakoutBar = null;
+  orbState.tradedLong = false;
+  orbState.tradedShort = false;
+  orbState.activeTrade = null;
+}
+
+function updateOpeningRange() {
+  const sessionKey = getCurrentSession();
+  if (orbState.sessionKey !== sessionKey) {
+    resetORBForSession(sessionKey);
+  }
+
+  const now = new Date();
+  const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const sStart = SESSIONS[sessionKey].start * 60;
+
+  // FORMING: within the opening range window
+  if (utcMin >= sStart && utcMin < sStart + orbWindowMin) {
+    if (orbState.status === 'inactive' || orbState.status === 'forming') {
+      orbState.status = 'forming';
+      orbState.sessionKey = sessionKey;
+      // Track high/low from candles within the window
+      const rangeCandles = candles.filter(c => {
+        const ct = new Date(c.datetime);
+        const cMin = ct.getUTCHours() * 60 + ct.getUTCMinutes();
+        return cMin >= sStart && cMin < sStart + orbWindowMin;
+      });
+      if (rangeCandles.length > 0) {
+        orbState.rangeHigh = Math.max(...rangeCandles.map(c => c.high));
+        orbState.rangeLow  = Math.min(...rangeCandles.map(c => c.low));
+        orbState.rangeStart = new Date(rangeCandles[0].datetime);
+        orbState.rangeEnd = new Date(rangeCandles[rangeCandles.length - 1].datetime);
+      }
+    }
+  }
+  // READY: just after window closed
+  else if (utcMin >= sStart + orbWindowMin) {
+    if (orbState.status === 'forming' || orbState.status === 'inactive') {
+      // Finalize range from candles in the window
+      const rangeCandles = candles.filter(c => {
+        const ct = new Date(c.datetime);
+        const cMin = ct.getUTCHours() * 60 + ct.getUTCMinutes();
+        return cMin >= sStart && cMin < sStart + orbWindowMin;
+      });
+      if (rangeCandles.length > 0) {
+        orbState.rangeHigh = Math.max(...rangeCandles.map(c => c.high));
+        orbState.rangeLow  = Math.min(...rangeCandles.map(c => c.low));
+        orbState.rangeStart = new Date(rangeCandles[0].datetime);
+        orbState.rangeEnd = new Date(rangeCandles[rangeCandles.length - 1].datetime);
+        orbState.status = 'ready';
+        const rangePips = ((orbState.rangeHigh - orbState.rangeLow) * 10000).toFixed(1);
+        chatMsg('range', `Opening range locked: <span class="hl-green">ORH ${orbState.rangeHigh.toFixed(5)}</span> · <span class="hl-red">ORL ${orbState.rangeLow.toFixed(5)}</span> · Range <span class="hl-cyan">${rangePips} pips</span>`);
+      }
+    }
+    // Check for breakout
+    checkBreakout();
+  }
+}
+
+function checkBreakout() {
+  if (!orbState.rangeHigh || !orbState.rangeLow) return;
+  if (orbState.status !== 'ready' && orbState.status !== 'bullish' && orbState.status !== 'bearish') return;
+
+  const sessionKey = orbState.sessionKey || getCurrentSession();
+  if (!isWithinTradingHours(sessionKey)) return;
+
+  const lastCandle = candles[candles.length - 1];
+  if (!lastCandle) return;
+  const current = lastCandle.close;
+
+  // Check for bullish breakout: candle CLOSES above ORH
+  if (current > orbState.rangeHigh && lastCandle.close > orbState.rangeHigh) {
+    if (orbState.status !== 'bullish' && !orbState.tradedLong) {
+      // Confirmation checks
+      const closes = candles.map(c => c.close);
+      const emaVal = calcEMA(closes, 21);
+      const rsiVal = calcRSI(closes, 14);
+      const avgVol = avgVolume(candles, 20);
+      const curVol = lastCandle.volume || 0;
+
+      const emaOk = !isNaN(emaVal) && current > emaVal;
+      const volOk = avgVol > 0 ? curVol > avgVol * 1.0 : true; // volume at least average
+      const rsiOk = !isNaN(rsiVal) && rsiVal < 75; // not extremely overbought
+
+      const confirmations = [];
+      if (emaOk) confirmations.push('EMA21↑');
+      if (volOk) confirmations.push('Vol↑');
+      if (rsiOk) confirmations.push('RSI OK');
+
+      const confPct = Math.min(95, 50 + confirmations.length * 15);
+
+      orbState.status = 'bullish';
+      orbState.breakoutBar = lastCandle;
+      orbState.tradedLong = true;
+      orbState.dailyTrades++;
+
+      const balance = parseFloat(document.getElementById('balanceInput').value) || 10000;
+      const riskPct = parseFloat(document.getElementById('riskInput').value) || 2;
+      const stopMode = document.getElementById('stopMode').value;
+      const atrVal = calcATR(candles, 14);
+
+      let sl, tp;
+      if (stopMode === 'midpoint') {
+        sl = (orbState.rangeHigh + orbState.rangeLow) / 2;
+      } else if (stopMode === 'atr') {
+        sl = !isNaN(atrVal) ? current - 1.5 * atrVal : orbState.rangeLow;
+      } else {
+        sl = orbState.rangeLow; // opposite side
+      }
+      const rangeHeight = orbState.rangeHigh - orbState.rangeLow;
+      tp = current + rangeHeight; // measured move = 1× range from breakout
+
+      orbState.activeTrade = { direction: 'BUY', entry: current, sl, tp, confPct, confirmations };
+
+      const slPips = ((current - sl) * 10000).toFixed(1);
+      const tpPips = ((tp - current) * 10000).toFixed(1);
+      const rr = slPips > 0 ? (tpPips / slPips).toFixed(2) : '—';
+
+      chatMsg('buy', `🟢 <span class="hl-green">BULLISH BREAKOUT</span> — Close ${current.toFixed(5)} above ORH ${orbState.rangeHigh.toFixed(5)}`);
+      chatMsg('signal', `Entry: <span class="hl-green">${current.toFixed(5)}</span> · SL: <span class="hl-red">${sl.toFixed(5)}</span> (${slPips}p) · TP: <span class="hl-green">${tp.toFixed(5)}</span> (${tpPips}p) · R:R <span class="hl-yellow">1:${rr}</span>`);
+      if (confirmations.length > 0) {
+        chatMsg('info', `Confirmations: ${confirmations.join(' · ')} (${confPct}% confidence)`);
+      } else {
+        chatMsg('warn', `No confirmation filters passed — breakout may be weak`);
+      }
+    }
+  }
+
+  // Check for bearish breakout: candle CLOSES below ORL
+  if (current < orbState.rangeLow && lastCandle.close < orbState.rangeLow) {
+    if (orbState.status !== 'bearish' && !orbState.tradedShort) {
+      const closes = candles.map(c => c.close);
+      const emaVal = calcEMA(closes, 21);
+      const rsiVal = calcRSI(closes, 14);
+      const avgVol = avgVolume(candles, 20);
+      const curVol = lastCandle.volume || 0;
+
+      const emaOk = !isNaN(emaVal) && current < emaVal;
+      const volOk = avgVol > 0 ? curVol > avgVol * 1.0 : true;
+      const rsiOk = !isNaN(rsiVal) && rsiVal > 25; // not extremely oversold
+
+      const confirmations = [];
+      if (emaOk) confirmations.push('EMA21↓');
+      if (volOk) confirmations.push('Vol↑');
+      if (rsiOk) confirmations.push('RSI OK');
+
+      const confPct = Math.min(95, 50 + confirmations.length * 15);
+
+      orbState.status = 'bearish';
+      orbState.breakoutBar = lastCandle;
+      orbState.tradedShort = true;
+      orbState.dailyTrades++;
+
+      const balance = parseFloat(document.getElementById('balanceInput').value) || 10000;
+      const riskPct = parseFloat(document.getElementById('riskInput').value) || 2;
+      const stopMode = document.getElementById('stopMode').value;
+      const atrVal = calcATR(candles, 14);
+
+      let sl, tp;
+      if (stopMode === 'midpoint') {
+        sl = (orbState.rangeHigh + orbState.rangeLow) / 2;
+      } else if (stopMode === 'atr') {
+        sl = !isNaN(atrVal) ? current + 1.5 * atrVal : orbState.rangeHigh;
+      } else {
+        sl = orbState.rangeHigh; // opposite side
+      }
+      const rangeHeight = orbState.rangeHigh - orbState.rangeLow;
+      tp = current - rangeHeight; // measured move
+
+      orbState.activeTrade = { direction: 'SELL', entry: current, sl, tp, confPct, confirmations };
+
+      const slPips = ((sl - current) * 10000).toFixed(1);
+      const tpPips = ((current - tp) * 10000).toFixed(1);
+      const rr = slPips > 0 ? (tpPips / slPips).toFixed(2) : '—';
+
+      chatMsg('sell', `🔴 <span class="hl-red">BEARISH BREAKOUT</span> — Close ${current.toFixed(5)} below ORL ${orbState.rangeLow.toFixed(5)}`);
+      chatMsg('signal', `Entry: <span class="hl-red">${current.toFixed(5)}</span> · SL: <span class="hl-red">${sl.toFixed(5)}</span> (${slPips}p) · TP: <span class="hl-green">${tp.toFixed(5)}</span> (${tpPips}p) · R:R <span class="hl-yellow">1:${rr}</span>`);
+      if (confirmations.length > 0) {
+        chatMsg('info', `Confirmations: ${confirmations.join(' · ')} (${confPct}% confidence)`);
+      } else {
+        chatMsg('warn', `No confirmation filters passed — breakout may be weak`);
+      }
+    }
+  }
+
+  // Check for failed breakout (price re-enters range)
+  if (orbState.activeTrade) {
+    if (orbState.activeTrade.direction === 'BUY' && current < orbState.rangeHigh) {
+      chatMsg('exit', `⚠ Price re-entered range — <span class="hl-red">bullish breakout failed</span>. Consider exit.`);
+    }
+    if (orbState.activeTrade.direction === 'SELL' && current > orbState.rangeLow) {
+      chatMsg('exit', `⚠ Price re-entered range — <span class="hl-red">bearish breakout failed</span>. Consider exit.`);
+    }
+    // Check TP hit
+    if (orbState.activeTrade.direction === 'BUY' && current >= orbState.activeTrade.tp) {
+      chatMsg('buy', `🎯 <span class="hl-green">TAKE PROFIT HIT</span> at ${current.toFixed(5)}!`);
+      orbState.activeTrade = null;
+    }
+    if (orbState.activeTrade.direction === 'SELL' && current <= orbState.activeTrade.tp) {
+      chatMsg('sell', `🎯 <span class="hl-green">TAKE PROFIT HIT</span> at ${current.toFixed(5)}!`);
+      orbState.activeTrade = null;
+    }
+    // Check SL hit
+    if (orbState.activeTrade.direction === 'BUY' && current <= orbState.activeTrade.sl) {
+      chatMsg('sell', `🛑 <span class="hl-red">STOP LOSS HIT</span> at ${current.toFixed(5)}`);
+      orbState.activeTrade = null;
+    }
+    if (orbState.activeTrade.direction === 'SELL' && current >= orbState.activeTrade.sl) {
+      chatMsg('sell', `🛑 <span class="hl-red">STOP LOSS HIT</span> at ${current.toFixed(5)}`);
+      orbState.activeTrade = null;
+    }
+  }
+}
+
+// ── CANDLESTICK CHART ──
+function drawCandlestickChart(candles, orbH, orbL) {
+  const svg = document.getElementById('main-chart');
+  const W = 500, H = 200;
+  const n = candles.length;
+  if (n === 0) return;
+
+  // Price range
+  const allH = candles.map(c => c.high);
+  const allL = candles.map(c => c.low);
+  let minP = Math.min(...allL);
+  let maxP = Math.max(...allH);
+  if (orbH !== null) { maxP = Math.max(maxP, orbH); }
+  if (orbL !== null) { minP = Math.min(minP, orbL); }
+  const pad = (maxP - minP) * 0.08;
+  minP -= pad;
+  maxP += pad;
+
+  const sy = v => H - ((v - minP) / (maxP - minP)) * H;
+  const candleW = Math.max(1, (W / n) * 0.6);
+  const gap = W / n;
+
+  let svgContent = '';
+
+  // ORB range box
+  if (orbH !== null && orbL !== null) {
+    const yH = sy(orbH);
+    const yL = sy(orbL);
+    svgContent += `<rect x="0" y="${yH.toFixed(1)}" width="${W}" height="${(yL - yH).toFixed(1)}" fill="rgba(0,212,255,0.06)" stroke="none"/>`;
+    svgContent += `<line x1="0" y1="${yH.toFixed(1)}" x2="${W}" y2="${yH.toFixed(1)}" stroke="rgba(0,229,160,0.5)" stroke-width="1" stroke-dasharray="5,3"/>`;
+    svgContent += `<line x1="0" y1="${yL.toFixed(1)}" x2="${W}" y2="${yL.toFixed(1)}" stroke="rgba(255,64,96,0.5)" stroke-width="1" stroke-dasharray="5,3"/>`;
+    // Labels
+    svgContent += `<text x="${W - 4}" y="${(yH - 3).toFixed(1)}" fill="rgba(0,229,160,0.7)" font-size="7" text-anchor="end" font-family="var(--font-mono)">ORH ${orbH.toFixed(5)}</text>`;
+    svgContent += `<text x="${W - 4}" y="${(yL + 10).toFixed(1)}" fill="rgba(255,64,96,0.7)" font-size="7" text-anchor="end" font-family="var(--font-mono)">ORL ${orbL.toFixed(5)}</text>`;
+  }
+
+  // Candles
+  for (let i = 0; i < n; i++) {
+    const c = candles[i];
+    const x = i * gap + gap / 2;
+    const isBull = c.close >= c.open;
+    const color = isBull ? '#00e5a0' : '#ff4060';
+    const bodyTop = sy(Math.max(c.open, c.close));
+    const bodyBot = sy(Math.min(c.open, c.close));
+    const bodyH = Math.max(1, bodyBot - bodyTop);
+
+    // Wick
+    svgContent += `<line x1="${x.toFixed(1)}" y1="${sy(c.high).toFixed(1)}" x2="${x.toFixed(1)}" y2="${sy(c.low).toFixed(1)}" stroke="${color}" stroke-width="1"/>`;
+    // Body
+    svgContent += `<rect x="${(x - candleW / 2).toFixed(1)}" y="${bodyTop.toFixed(1)}" width="${candleW.toFixed(1)}" height="${bodyH.toFixed(1)}" fill="${isBull ? color : color}" stroke="${color}" stroke-width="0.5" rx="0.5"/>`;
+  }
+
+  // EMA line
   const closes = candles.map(c => c.close);
-  const n = closes.length;
-  const min = Math.min(...closes) * 0.9999;
-  const max = Math.max(...closes) * 1.0001;
-  const W = 400, H = 120;
-  const sx = i => (i / (n-1)) * W;
-  const sy = v => H - ((v - min) / (max - min)) * H;
-  let d = closes.map((v,i) => `${i===0?'M':'L'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join(' ');
-  let area = d + ` L${sx(n-1)},${H} L0,${H} Z`;
-  const color = closes[n-1] >= closes[0] ? '#00e5a0' : '#ff4060';
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${color}" stop-opacity="0.18"/>
-        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <path d="${area}" fill="url(#ag)"/>
-    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>
-    ${!isNaN(smaVal) ? `<line x1="0" y1="${sy(smaVal).toFixed(1)}" x2="${W}" y2="${sy(smaVal).toFixed(1)}" stroke="rgba(77,168,255,0.5)" stroke-width="1" stroke-dasharray="4,3"/>` : ''}
-  `;
+  const emaPeriod = 21;
+  if (closes.length >= emaPeriod) {
+    const k = 2 / (emaPeriod + 1);
+    let emaVals = [closes.slice(0, emaPeriod).reduce((a, b) => a + b, 0) / emaPeriod];
+    for (let i = emaPeriod; i < closes.length; i++) {
+      emaVals.push(closes[i] * k + emaVals[emaVals.length - 1] * (1 - k));
+    }
+    const offset = emaPeriod - 1;
+    let d = '';
+    for (let i = 0; i < emaVals.length; i++) {
+      const x = (offset + i) * gap + gap / 2;
+      const y = sy(emaVals[i]);
+      d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+    }
+    svgContent += `<path d="${d}" fill="none" stroke="rgba(77,168,255,0.5)" stroke-width="1.2" stroke-linejoin="round"/>`;
+  }
+
+  svg.innerHTML = svgContent;
 }
 
-/* ── RENDER ── */
-function render(candles, balance, riskPct) {
+// ── RENDER DASHBOARD ──
+function render() {
+  if (candles.length === 0) return;
+
   const closes = candles.map(c => c.close);
   const current = closes[closes.length - 1];
-  const prev    = closes[closes.length - 2] || current;
+  const prev = closes.length > 1 ? closes[closes.length - 2] : current;
 
-  const smaVal = calcSMA(closes, 20);
-  const emaVal = calcEMA(closes, 20);
+  const emaVal = calcEMA(closes, 21);
   const atrVal = calcATR(candles, 14);
   const rsiVal = calcRSI(closes, 14);
-
-  const { signal, reason } = getSignal(current, smaVal, rsiVal);
-  const conf = getConf(current, smaVal, rsiVal);
-  const risk = getRisk(current, atrVal, balance, riskPct);
-
-  let sl = null, tp = null, lots = 0, rr = 0;
-  if (signal === 'BUY')  { sl = risk.sl_buy;  tp = risk.tp_buy; }
-  if (signal === 'SELL') { sl = risk.sl_sell; tp = risk.tp_sell; }
-  if (sl !== null) {
-    lots = getLots(current, sl, risk.riskAmt);
-    const slP = Math.abs(current - sl) * 10000;
-    const tpP = Math.abs(current - tp) * 10000;
-    rr = slP > 0 ? +(tpP / slP).toFixed(2) : 0;
-  }
+  const avgVol = avgVolume(candles, 20);
+  const lastVol = candles[candles.length - 1].volume || 0;
 
   const change = current - prev;
   const changePct = (change / prev * 100).toFixed(4);
   const changeColor = change >= 0 ? '#00e5a0' : '#ff4060';
-  const changeSign  = change >= 0 ? '+' : '';
+  const changeSign = change >= 0 ? '+' : '';
 
-  // Chart
-  drawChart(candles, smaVal);
-  document.getElementById('chartLabel').textContent =
-    `EUR/USD · ${selectedInterval} · ${candles.length} candles`;
+  // Session indicator
+  const sessionKey = getCurrentSession();
+  const sessLabel = SESSIONS[sessionKey]?.label || '—';
+  document.getElementById('sessionIndicator').textContent = sessLabel + ' Session';
+  document.getElementById('indSession').textContent = sessLabel;
+  document.getElementById('indSession').className = 'ind-val up';
 
   // Last updated
-  document.getElementById('lastUpdated').textContent =
-    'Last updated: ' + new Date().toLocaleTimeString();
+  document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
+  // ORB card
+  const orbStatusEl = document.getElementById('orbStatus');
+  orbStatusEl.textContent = orbState.status.toUpperCase();
+  orbStatusEl.className = 'orb-status ' + orbState.status;
+  document.getElementById('orbHigh').textContent = orbState.rangeHigh !== null ? orbState.rangeHigh.toFixed(5) : '—';
+  document.getElementById('orbLow').textContent = orbState.rangeLow !== null ? orbState.rangeLow.toFixed(5) : '—';
+  if (orbState.rangeHigh !== null && orbState.rangeLow !== null) {
+    const rangePips = ((orbState.rangeHigh - orbState.rangeLow) * 10000).toFixed(1);
+    document.getElementById('orbSize').textContent = rangePips + ' pips';
+    const mid = ((orbState.rangeHigh + orbState.rangeLow) / 2).toFixed(5);
+    document.getElementById('orbMid').textContent = mid;
+  } else {
+    document.getElementById('orbSize').textContent = '—';
+    document.getElementById('orbMid').textContent = '—';
+  }
+
+  // Chart
+  drawCandlestickChart(candles, orbState.rangeHigh, orbState.rangeLow);
+  document.getElementById('chartLabel').textContent = `EUR/USD · ${chartInterval} · ${candles.length} candles · ORB ${orbWindowMin}m`;
 
   // Ticker
-  document.getElementById('tcPrice').textContent = current.toFixed(5);
-  document.getElementById('tcPrice').style.color = changeColor;
-  document.getElementById('tcSMA').textContent = isNaN(smaVal) ? '—' : smaVal.toFixed(5);
+  const priceEl = document.getElementById('tcPrice');
+  priceEl.textContent = current.toFixed(5);
+  priceEl.style.color = changeColor;
+  document.getElementById('tcEMA').textContent = isNaN(emaVal) ? '—' : emaVal.toFixed(5);
   document.getElementById('tcATR').textContent = isNaN(atrVal) ? '—' : atrVal.toFixed(5);
   const rsiEl = document.getElementById('tcRSI');
   rsiEl.textContent = isNaN(rsiVal) ? '—' : rsiVal.toFixed(1);
   rsiEl.className = `tc-val ${rsiVal >= 70 ? 'down' : rsiVal <= 30 ? 'up' : ''}`;
+  const volEl = document.getElementById('tcVol');
+  volEl.textContent = avgVol > 0 ? (lastVol > avgVol ? 'HIGH' : 'AVG') : '—';
+  volEl.className = `tc-val ${lastVol > avgVol ? 'up' : ''}`;
 
   // Signal card
   const card = document.getElementById('signalCard');
-  card.className = `signal-card ${signal.toLowerCase()}`;
+  let signal, reason, conf, filters;
+  if (orbState.activeTrade) {
+    signal = orbState.activeTrade.direction; // BUY or SELL
+    const slPips = Math.abs(current - orbState.activeTrade.sl) * 10000;
+    const tpPips = Math.abs(orbState.activeTrade.tp - current) * 10000;
+    const rr = slPips > 0 ? (tpPips / slPips).toFixed(2) : '—';
+    reason = signal === 'BUY'
+      ? `Candle closed above ORH ${orbState.rangeHigh?.toFixed(5)} · SL ${slPips.toFixed(1)}p below · TP ${tpPips.toFixed(1)}p above`
+      : `Candle closed below ORL ${orbState.rangeLow?.toFixed(5)} · SL ${slPips.toFixed(1)}p above · TP ${tpPips.toFixed(1)}p below`;
+    conf = orbState.activeTrade.confPct;
+    filters = orbState.activeTrade.confirmations.join(' · ') || 'No confirmations';
+  } else if (orbState.status === 'forming') {
+    signal = 'WAIT';
+    reason = `Opening range forming — wait for ${orbWindowMin}m window to close`;
+    conf = 0;
+    filters = 'Range not yet established';
+  } else if (orbState.status === 'ready') {
+    const nearHigh = orbState.rangeHigh && current > orbState.rangeHigh - (orbState.rangeHigh - orbState.rangeLow) * 0.15;
+    const nearLow = orbState.rangeLow && current < orbState.rangeLow + (orbState.rangeHigh - orbState.rangeLow) * 0.15;
+    if (nearHigh) {
+      signal = 'WAIT';
+      reason = `Price approaching ORH ${orbState.rangeHigh?.toFixed(5)} — watching for bullish breakout`;
+      conf = 15;
+    } else if (nearLow) {
+      signal = 'WAIT';
+      reason = `Price approaching ORL ${orbState.rangeLow?.toFixed(5)} — watching for bearish breakout`;
+      conf = 15;
+    } else {
+      signal = 'WAIT';
+      reason = `Range set — waiting for close above ORH or below ORL`;
+      conf = 0;
+    }
+    filters = 'Waiting for breakout candle close';
+  } else if (orbState.status === 'inactive') {
+    signal = 'HOLD';
+    reason = 'Session not yet started or outside trading hours';
+    conf = 0;
+    filters = '—';
+  } else {
+    signal = 'WAIT';
+    reason = 'Monitoring for breakout signal…';
+    conf = 0;
+    filters = '—';
+  }
+
+  const sigClass = signal === 'BUY' ? 'buy' : signal === 'SELL' ? 'sell' : signal === 'WAIT' ? 'wait' : 'hold';
+  card.className = `signal-card ${sigClass}`;
   document.getElementById('sigGlyph').textContent = signal;
-  document.getElementById('sigConf').textContent  = conf + '%';
+  document.getElementById('sigConf').textContent = conf + '%';
   document.getElementById('sigConfBar').style.width = conf + '%';
   document.getElementById('sigReason').textContent = reason;
-  document.getElementById('sigPriceChange').innerHTML =
-    `<span style="color:${changeColor}">${changeSign}${change.toFixed(5)} (${changeSign}${changePct}%)</span>`;
+  document.getElementById('sigFilters').textContent = filters ? '✓ ' + filters : '';
 
-  // RSI gauge
-  const rsiPct = isNaN(rsiVal) ? 50 : Math.min(100, Math.max(0, rsiVal));
-  document.getElementById('rsiNeedle').style.left = rsiPct + '%';
-  const rsiStateEl = document.getElementById('rsiState');
-  if (rsiVal >= 70)      { rsiStateEl.textContent = 'OVERBOUGHT'; rsiStateEl.className = 'rsi-state ob'; }
-  else if (rsiVal <= 30) { rsiStateEl.textContent = 'OVERSOLD';   rsiStateEl.className = 'rsi-state os'; }
-  else                   { rsiStateEl.textContent = 'NEUTRAL';    rsiStateEl.className = 'rsi-state neutral'; }
+  // Confirmation indicators
+  const trendDir = isNaN(emaVal) ? 'N/A' : current > emaVal ? 'BULLISH' : 'BEARISH';
+  document.getElementById('indTrend').textContent = trendDir;
+  document.getElementById('indTrend').className = `ind-val ${trendDir === 'BULLISH' ? 'up' : 'down'}`;
+  const volState = avgVol > 0 ? (lastVol > avgVol ? 'ABOVE AVG ✓' : 'BELOW AVG') : 'N/A';
+  document.getElementById('indVol').textContent = volState;
+  document.getElementById('indVol').className = `ind-val ${lastVol > avgVol ? 'up' : 'neutral'}`;
+  const candleDir = current > prev ? 'BULLISH' : current < prev ? 'BEARISH' : 'DOJI';
+  document.getElementById('indCandle').textContent = candleDir;
+  document.getElementById('indCandle').className = `ind-val ${candleDir === 'BULLISH' ? 'up' : candleDir === 'BEARISH' ? 'down' : 'neutral'}`;
+  document.getElementById('indRSI').textContent = isNaN(rsiVal) ? '—' : rsiVal.toFixed(1);
+  document.getElementById('indRSI').className = `ind-val ${rsiVal >= 70 ? 'down' : rsiVal <= 30 ? 'up' : 'neutral'}`;
+  // Range quality: check if range is reasonable (not too narrow, not too wide)
+  if (orbState.rangeHigh !== null && orbState.rangeLow !== null) {
+    const rangePips = (orbState.rangeHigh - orbState.rangeLow) * 10000;
+    const atrPips = !isNaN(atrVal) ? atrVal * 10000 : 0;
+    let quality = 'NORMAL';
+    let qClass = 'up';
+    if (rangePips < 5) { quality = 'TOO NARROW'; qClass = 'down'; }
+    else if (rangePips < 10) { quality = 'TIGHT'; qClass = 'neutral'; }
+    else if (rangePips > 50) { quality = 'TOO WIDE'; qClass = 'down'; }
+    else if (rangePips > 35) { quality = 'WIDE'; qClass = 'neutral'; }
+    document.getElementById('indRange').textContent = quality;
+    document.getElementById('indRange').className = `ind-val ${qClass}`;
+  } else {
+    document.getElementById('indRange').textContent = '—';
+  }
 
-  // Indicators
-  const trend = isNaN(smaVal) ? 'N/A' : current > smaVal ? 'BULLISH' : 'BEARISH';
-  document.getElementById('indTrend').textContent  = trend;
-  document.getElementById('indTrend').className    = `ind-val ${trend === 'BULLISH' ? 'up' : 'down'}`;
-  document.getElementById('indEMA').textContent    = isNaN(emaVal) ? '—' : emaVal.toFixed(5);
-  document.getElementById('indATR').textContent    = isNaN(atrVal) ? '—' : atrVal.toFixed(5);
-  document.getElementById('indRSI').textContent    = isNaN(rsiVal) ? '—' : rsiVal.toFixed(1);
-  document.getElementById('indRSI').className      = `ind-val ${rsiVal >= 70 ? 'down' : rsiVal <= 30 ? 'up' : 'neutral'}`;
-  document.getElementById('indCandles').textContent = candles.length;
+  // Risk panel
+  const balance = parseFloat(document.getElementById('balanceInput').value) || 10000;
+  const riskPct = parseFloat(document.getElementById('riskInput').value) || 2;
+  const riskAmt = balance * riskPct / 100;
+  document.getElementById('riskBal').textContent = '$' + balance.toLocaleString();
+  document.getElementById('riskPct').textContent = riskPct + '%';
+  document.getElementById('riskAmt').textContent = '$' + riskAmt.toFixed(2);
+  document.getElementById('riskTrades').textContent = orbState.dailyTrades + ' today';
 
-  // Risk
-  document.getElementById('riskBal').textContent  = '$' + balance.toLocaleString();
-  document.getElementById('riskPct').textContent  = riskPct + '%';
-  document.getElementById('riskAmt').textContent  = '$' + risk.riskAmt.toFixed(2);
-  document.getElementById('riskLots').textContent = sl !== null ? lots.toFixed(2) + ' lots' : '—';
-  document.getElementById('riskRR').textContent   = rr > 0 ? '1:' + rr : '—';
+  if (orbState.activeTrade) {
+    const trade = orbState.activeTrade;
+    const slPips = Math.abs(trade.entry - trade.sl) * 10000;
+    const tpPips = Math.abs(trade.tp - trade.entry) * 10000;
+    const lots = slPips > 0 ? Math.max(0.01, Math.floor(riskAmt / (slPips * 10) * 100) / 100) : 0.01;
+    const rr = slPips > 0 ? (tpPips / slPips).toFixed(2) : '—';
+    document.getElementById('riskLots').textContent = lots.toFixed(2) + ' lots';
+    document.getElementById('riskRR').textContent = '1:' + rr;
 
-  // Trade plan
-  const planBody = document.getElementById('tradePlanBody');
-  if (sl !== null) {
-    const reward = risk.riskAmt * rr;
-    const slPips = (Math.abs(current - sl) * 10000).toFixed(1);
-    const tpPips = (Math.abs(current - tp) * 10000).toFixed(1);
+    // Trade plan
+    const reward = riskAmt * parseFloat(rr);
+    const planBody = document.getElementById('tradePlanBody');
     planBody.innerHTML = `
       <div class="plan-grid">
-        <div><div class="plan-label">Entry</div><div class="plan-val entry">${current.toFixed(5)}</div></div>
-        <div><div class="plan-label">Stop Loss</div><div class="plan-val sl">${sl.toFixed(5)} <small style="font-size:.55rem;color:var(--muted)">(${slPips} pips)</small></div></div>
-        <div><div class="plan-label">Take Profit</div><div class="plan-val tp">${tp.toFixed(5)} <small style="font-size:.55rem;color:var(--muted)">(${tpPips} pips)</small></div></div>
-        <div><div class="plan-label">Risk/Reward</div><div class="plan-val rr">1:${rr}</div></div>
+        <div><div class="plan-label">Direction</div><div class="plan-val ${trade.direction === 'BUY' ? 'tp' : 'sl'}">${trade.direction}</div></div>
+        <div><div class="plan-label">Entry</div><div class="plan-val entry">${trade.entry.toFixed(5)}</div></div>
+        <div><div class="plan-label">Stop Loss</div><div class="plan-val sl">${trade.sl.toFixed(5)} <small style="font-size:.5rem;color:var(--muted)">(${slPips.toFixed(1)} pips)</small></div></div>
+        <div><div class="plan-label">Take Profit</div><div class="plan-val tp">${trade.tp.toFixed(5)} <small style="font-size:.5rem;color:var(--muted)">(${tpPips.toFixed(1)} pips)</small></div></div>
+        <div><div class="plan-label">Risk / Reward</div><div class="plan-val rr">1:${rr}</div></div>
+        <div><div class="plan-label">Lots</div><div class="plan-val" style="color:var(--blue)">${lots.toFixed(2)}</div></div>
       </div>
       <div class="pnl-row">
-        <div class="pnl-item loss"><div class="pnl-lbl">Max Loss</div><div class="pnl-amount">-$${risk.riskAmt.toFixed(2)}</div></div>
+        <div class="pnl-item loss"><div class="pnl-lbl">Max Loss</div><div class="pnl-amount">-$${riskAmt.toFixed(2)}</div></div>
         <div class="pnl-item gain"><div class="pnl-lbl">Target Gain</div><div class="pnl-amount">+$${reward.toFixed(2)}</div></div>
       </div>`;
   } else {
-    planBody.innerHTML = `<div class="no-plan">Signal is ${signal} — no active trade plan</div>`;
+    document.getElementById('riskLots').textContent = '—';
+    document.getElementById('riskRR').textContent = '—';
+    document.getElementById('tradePlanBody').innerHTML = `<div class="no-plan">${sigClass === 'wait' ? 'Watching for ORB breakout…' : 'No active signal'}</div>`;
   }
 }
 
-/* ── FETCH FROM TWELVE DATA ── */
-async function runAnalysis() {
-  const apiKey  = document.getElementById('apiKey').value.trim();
-  const balance = parseFloat(document.getElementById('balanceInput').value) || 10000;
-  const riskPct = parseFloat(document.getElementById('riskInput').value) || 2;
+// ── FETCH CANDLE DATA ──
+async function fetchCandles() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) return;
 
+  try {
+    const url = `https://api.twelvedata.com/time_series?apikey=${apiKey}&symbol=EUR/USD&interval=${chartInterval}&outputsize=60&format=JSON`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.status === 'error' || data.code) {
+      chatMsg('warn', `API error: ${data.message || 'Unknown error'}`);
+      return;
+    }
+    if (!data.values || data.values.length === 0) {
+      chatMsg('warn', 'No candle data returned — market may be closed');
+      return;
+    }
+
+    const raw = [...data.values].reverse();
+    candles = raw.map(c => ({
+      open:   parseFloat(c.open),
+      high:   parseFloat(c.high),
+      low:    parseFloat(c.low),
+      close:  parseFloat(c.close),
+      volume: parseFloat(c.volume || 0),
+      datetime: c.datetime
+    }));
+
+    updateOpeningRange();
+    render();
+
+  } catch (err) {
+    chatMsg('warn', `Fetch error: ${err.message}`);
+  }
+}
+
+// ── WEBSOCKET FOR REAL-TIME PRICE ──
+function connectWebSocket() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) return;
+
+  // Close existing
+  if (ws) { ws.close(); ws = null; }
+
+  try {
+    ws = new WebSocket(`wss://ws.twelvedata.com/v1/quotes/price?apikey=${apiKey}`);
+
+    ws.onopen = () => {
+      document.getElementById('liveBadge').className = 'live-badge';
+      document.getElementById('liveBadge').innerHTML = '<span class="live-dot"></span>Live';
+      chatMsg('system', `WebSocket connected — streaming real-time EUR/USD prices`);
+      // Subscribe
+      ws.send(JSON.stringify({
+        action: 'subscribe',
+        params: { symbols: 'EUR/USD' }
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.event === 'price') {
+          const price = parseFloat(msg.price);
+          if (price && candles.length > 0) {
+            // Update last candle's close with real-time price
+            const last = candles[candles.length - 1];
+            const prevClose = last.close;
+            last.close = price;
+            if (price > last.high) last.high = price;
+            if (price < last.low) last.low = price;
+
+            updateOpeningRange();
+            render();
+
+            // Log significant moves
+            const movePips = Math.abs(price - prevClose) * 10000;
+            if (movePips > 3) {
+              const dir = price > prevClose ? '↑' : '↓';
+              const color = price > prevClose ? 'hl-green' : 'hl-red';
+              chatMsg('info', `Price jump: <span class="${color}">${price.toFixed(5)} ${dir}</span> (${movePips.toFixed(1)} pips)`);
+
+              // Check proximity to ORB levels
+              if (orbState.rangeHigh !== null && orbState.rangeLow !== null) {
+                const distToHigh = (orbState.rangeHigh - price) * 10000;
+                const distToLow = (price - orbState.rangeLow) * 10000;
+                if (distToHigh > 0 && distToHigh < 5) {
+                  chatMsg('range', `Price <span class="hl-yellow">${distToHigh.toFixed(1)} pips from ORH</span> — potential breakout zone`);
+                }
+                if (distToLow > 0 && distToLow < 5) {
+                  chatMsg('range', `Price <span class="hl-yellow">${distToLow.toFixed(1)} pips from ORL</span> — potential breakdown zone`);
+                }
+              }
+            }
+          }
+        } else if (msg.event === 'heartbeat') {
+          // Keep alive — no action needed
+        }
+      } catch (e) { /* ignore parse errors */ }
+    };
+
+    ws.onerror = () => {
+      chatMsg('warn', 'WebSocket error — falling back to polling');
+      document.getElementById('liveBadge').className = 'live-badge offline';
+      document.getElementById('liveBadge').innerHTML = '<span class="live-dot"></span>Polling';
+    };
+
+    ws.onclose = () => {
+      if (isLive) {
+        chatMsg('system', 'WebSocket closed — will retry in 5s');
+        document.getElementById('liveBadge').className = 'live-badge offline';
+        document.getElementById('liveBadge').innerHTML = '<span class="live-dot"></span>Reconnecting';
+        setTimeout(() => { if (isLive) connectWebSocket(); }, 5000);
+      }
+    };
+
+  } catch (e) {
+    chatMsg('warn', `WebSocket unavailable: ${e.message} — using polling`);
+    document.getElementById('liveBadge').className = 'live-badge offline';
+    document.getElementById('liveBadge').innerHTML = '<span class="live-dot"></span>Polling';
+  }
+}
+
+// ── POLLING FALLBACK ──
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(() => {
+    if (isLive) fetchCandles();
+  }, 10000); // Poll every 10 seconds
+}
+
+// ── START / STOP ──
+async function startLive() {
+  const apiKey = document.getElementById('apiKey').value.trim();
   if (!apiKey) {
     showError('Please enter your Twelve Data API key.');
     return;
   }
 
-  const btn = document.getElementById('runBtn');
-  btn.disabled = true;
+  isLive = true;
   document.getElementById('errorBox').classList.remove('active');
-  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('setupCard').style.display = 'none';
   document.getElementById('spinner').classList.add('active');
-  document.getElementById('spinLabel').textContent = 'Fetching real EUR/USD candles…';
+  document.getElementById('spinLabel').textContent = 'Fetching initial candle data…';
 
-  try {
-    const url = `https://api.twelvedata.com/time_series?apikey=${apiKey}&symbol=EUR/USD&interval=${selectedInterval}&outputsize=100&format=JSON`;
-    const res  = await fetch(url);
-    const data = await res.json();
+  chatMsg('system', `TradeKing ORB starting — ${orbWindowMin}m window · ${SESSIONS[getCurrentSession()].label} session`);
 
-    if (data.status === 'error' || data.code) {
-      throw new Error(data.message || 'API error — check your API key or rate limit');
-    }
+  // Initial fetch
+  await fetchCandles();
 
-    if (!data.values || data.values.length === 0) {
-      throw new Error('No candle data returned. Market may be closed or symbol unavailable.');
-    }
+  document.getElementById('spinner').classList.remove('active');
+  document.getElementById('dashboard').style.display = 'flex';
 
-    // Twelve Data returns newest first — reverse to oldest first
-    const raw = [...data.values].reverse();
-    const candles = raw.map(c => ({
-      open:  parseFloat(c.open),
-      high:  parseFloat(c.high),
-      low:   parseFloat(c.low),
-      close: parseFloat(c.close),
-      datetime: c.datetime
-    }));
+  // Determine current state
+  const sessionKey = getCurrentSession();
+  const now = new Date();
+  const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const sStart = SESSIONS[sessionKey].start * 60;
 
-    document.getElementById('spinner').classList.remove('active');
-    document.getElementById('dashboard').style.display = 'flex';
-    render(candles, balance, riskPct);
-
-  } catch (err) {
-    document.getElementById('spinner').classList.remove('active');
-    showError(err.message + '<br><br>Common fixes:<br>• Check your API key is correct<br>• Free tier allows ~8 requests/min — wait a moment and retry<br>• Forex market is closed on weekends (use 1h or 4h interval instead)');
-  } finally {
-    btn.disabled = false;
+  if (utcMin < sStart) {
+    chatMsg('system', `${SESSIONS[sessionKey].label} session starts at ${SESSIONS[sessionKey].start}:00 UTC — currently pre-market`);
+  } else if (utcMin >= sStart && utcMin < sStart + orbWindowMin) {
+    chatMsg('range', `Opening range forming — ${orbWindowMin}m window in progress`);
+  } else if (utcMin >= sStart + orbWindowMin) {
+    chatMsg('range', `Opening range window has closed — monitoring for breakout`);
   }
+
+  // Connect WebSocket
+  connectWebSocket();
+
+  // Start polling as backup
+  startPolling();
 }
 
-function showError(msg) {
-  const el = document.getElementById('errorBox');
-  el.innerHTML = '⚠ ' + msg;
-  el.classList.add('active');
+function stopLive() {
+  isLive = false;
+  if (ws) { ws.close(); ws = null; }
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+
+  document.getElementById('liveBadge').className = 'live-badge offline';
+  document.getElementById('liveBadge').innerHTML = '<span class="live-dot"></span>Offline';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('setupCard').style.display = 'block';
+
+  chatMsg('system', 'Live feed stopped');
 }
+
+// ── AUTO-DETECT SESSION ON LOAD ──
+(function init() {
+  const sessionKey = getCurrentSession();
+  const sessLabel = SESSIONS[sessionKey]?.label || '—';
+  document.getElementById('sessionIndicator').textContent = sessLabel + ' Session';
+})();
 </script>
 </body>
 </html>
